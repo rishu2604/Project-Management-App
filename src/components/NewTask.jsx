@@ -4,7 +4,7 @@ export default function NewTask({onAdd}){
     const [ enteredTask, setEnteredTask ] = useState('');
 
     function handleChange(event){
-        setEnteredTask(event.target.value)
+        setEnteredTask(event.target.value);
     }
 
     function handleClick(){
