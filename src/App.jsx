@@ -6,15 +6,16 @@ import SelectedProject from "./components/SelectedProject";
 
 function App() {
   const [projectState, setProjectState] = useState({
-    selectedProjectId: undefined,
-    projects: []
+    selectedProject: undefined,
+    projects: [],
+    tasks: [],
   });
 
   function handleStartAddProject(){
-    setProjectState(prevState=>{
+    setProjectState((prevState)=>{
       return{
         ...prevState,
-        selectedProjectId: null
+        selectedProject: null
       }
     })
   }
@@ -23,7 +24,7 @@ function App() {
     setProjectState(prevState=>{
       return{
         ...prevState,
-        selectedProjectId: id
+        selectedProject: id,
       }
     })
   }
@@ -32,33 +33,65 @@ function App() {
     setProjectState(prevState=>{
       return{
         ...prevState,
-        selectedProjectId: undefined
+        selectedProject: undefined
       }
     })
   }
 
   function handleAddProject(projectData){
-    const projectId = Math.random();
-    const newProject = {
-      ...projectData,
-      id: projectId
-    };
-    setProjectState(prevState=>{
+    setProjectState((prevState)=>{
+      const projectId = Math.random(); 
+      const newProject = {
+        ...projectData,
+        id: projectId
+      };
       return{
         ...prevState,
-        selectedProjectId: undefined,
-        projects: [...prevState.projects, newProject]
+        selectedProject: undefined,
+        projects: [...prevState.projects, newProject],
       };
-    })
+    });
   }
 
-  const selectedProject = projectState.projects.find(project=>project.id===projectState.selectedProjectId)
-  let content = <SelectedProject project={selectedProject}/> ;
+  function handleDeleteProject(){
+    setProjectState((prevState)=>{
+      return{
+        ...prevState,
+        selectedProject: undefined,
+        projects: prevState.projects.filter((proj)=>
+          proj.id!==prevState.selectedProject
+          // console.log(prevState.selectedProject)
+          ),
+      };
+    });
+  }
 
-  if(projectState.selectedProjectId===null){
+  function handleAddTask(text){
+    setProjectState((prevState)=>{
+      const taskId = Math.random(); 
+      const newTask = {
+        text: text,
+        projectId: prevState.selectedProject,
+        id: taskId,
+      };
+      return{
+        ...prevState,
+        tasks: [newTask, ...prevState.tasks],
+      };
+    });
+  }
+
+  function handleDeleteTask(){
+
+  }
+
+  const selectedProject = projectState.projects.find((project)=>project.id===projectState.selectedProject)
+  let content = <SelectedProject project={selectedProject} onDelete={handleDeleteProject} onAddTask={handleAddTask} onDeleteTask={handleDeleteTask} tasks={projectState.tasks}/> ;
+
+  if(projectState.selectedProject===null){
     content = <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject}/>
   }
-  else if(projectState.selectedProjectId===undefined){
+  else if(projectState.selectedProject===undefined){
     content = <NoProjectSelected onStartAddProject={handleStartAddProject}/>
   }
   return (          
